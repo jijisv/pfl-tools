@@ -21,20 +21,38 @@ class OfflineBlogRequestHandler(SimpleHTTPRequestHandler):
     
     def createFile(self, path, post_name):
         template = open(os.path.join(os.getcwd(), 'index.htm'), 'r').read()
-        post = open(os.path.join(os.getcwd(), 'drafts', post_name + '.html'), 'r').read().strip()
-
-        start = post.find('<h1>')
-        if (start == 0):
-            end = post.find('</h1>')
-            post_title = post[:end]
-            post = post[end + 5:]
-        else :
-            post_title = post_name    
+        
+        (post_title, post) = self.getPost(post_name)
+        
+#         post = open(os.path.join(os.getcwd(), 'drafts', post_name + '.html'), 'r').read().strip()
+# 
+#         start = post.find('<h1>')
+#         if (start == 0):
+#             end = post.find('</h1>')
+#             post_title = post[:end]
+#             post = post[end + 5:]
+#         else :
+#             post_title = post_name    
 
         f = open(os.path.join(os.getcwd(), 'v'), 'w')
         f.write(template.replace('$BLOG_ENTRY_BODY$', post).replace('$BLOG_ENTRY_TITLE$', post_title))
         f.close()
 
+    def getPost(self, post_name):
+        post_title = post_name
+        try:
+            post = open(os.path.join(os.getcwd(), 'drafts', post_name + '.html'), 'r').read().strip()
+    
+            start = post.find('<h1>')
+            if (start == 0):
+                end = post.find('</h1>')
+                post_title = post[:end]
+                post = post[end + 5:]
+        except:
+            post = "<center><br/><br/>The post <b>%s.html</b> not found in drafts.<br/><br/><br/><br/></center>" % (post_name)
+                
+        return (post_title, post)
+        
     def guess_type(self, path):
         if path.endswith('/v'):
             return 'text/html'
