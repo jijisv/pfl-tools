@@ -16,29 +16,17 @@ class OfflineBlogRequestHandler(SimpleHTTPRequestHandler):
         pr = urllib.parse.urlparse(self.path)
         if pr.path == '/v':
             params = urllib.parse.parse_qs(pr.query)
-            self.createFile(pr.path, params['p'][0])
-        SimpleHTTPRequestHandler.do_GET(self)
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(self.getPost(pr.path, params['p'][0]).encode())
+            self.wfile.flush()
+        else:
+            SimpleHTTPRequestHandler.do_GET(self)
     
-    def createFile(self, path, post_name):
+    def getPost(self, path, post_name):
         template = open(os.path.join(os.getcwd(), 'index.htm'), 'r').read()
-        
-        (post_title, post) = self.getPost(post_name)
-        
-#         post = open(os.path.join(os.getcwd(), 'drafts', post_name + '.html'), 'r').read().strip()
-# 
-#         start = post.find('<h1>')
-#         if (start == 0):
-#             end = post.find('</h1>')
-#             post_title = post[:end]
-#             post = post[end + 5:]
-#         else :
-#             post_title = post_name    
 
-        f = open(os.path.join(os.getcwd(), 'v'), 'w')
-        f.write(template.replace('$BLOG_ENTRY_BODY$', post).replace('$BLOG_ENTRY_TITLE$', post_title))
-        f.close()
-
-    def getPost(self, post_name):
         post_title = post_name
         try:
             post = open(os.path.join(os.getcwd(), 'drafts', post_name + '.html'), 'r').read().strip()
@@ -49,15 +37,9 @@ class OfflineBlogRequestHandler(SimpleHTTPRequestHandler):
                 post_title = post[:end]
                 post = post[end + 5:]
         except:
-            post = "<center><br/><br/>The post <b>%s.html</b> not found in drafts.<br/><br/><br/><br/></center>" % (post_name)
-                
-        return (post_title, post)
-        
-    def guess_type(self, path):
-        if path.endswith('/v'):
-            return 'text/html'
-        else: 
-            SimpleHTTPRequestHandler.guess_type(self, path);
+            post = "<p style=\"text-align: center;margin: 3em;\">The post <b>%s.html</b> not found in drafts.</p>" % (post_name)
+
+        return template.replace('$BLOG_ENTRY_BODY$', post).replace('$BLOG_ENTRY_TITLE$', post_title)
 
 if __name__ == '__main__':
     httpd = HTTPServer(('', int(sys.argv[1])), OfflineBlogRequestHandler)
