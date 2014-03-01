@@ -31,11 +31,11 @@ class OfflineBlogRequestHandler(SimpleHTTPRequestHandler):
         try:
             post = open(os.path.join(os.getcwd(), 'drafts', post_name + '.html'), 'r').read().strip()
     
-            start = post.find('<h1>')
+            start = post.find('<title>')
             if (start == 0):
-                end = post.find('</h1>')
-                post_title = post[:end]
-                post = post[end + 5:]
+                end = post.find('</title>')
+                post_title = post[(start+7):end]
+                post = post[end + 8:]
         except:
             post = "<p style=\"text-align: center;margin: 3em;\">The post <b>%s.html</b> not found in drafts.</p>" % (post_name)
 
