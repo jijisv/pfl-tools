@@ -17,7 +17,6 @@ vertx.http.createHttpServer().requestHandler(function(req) {
 			if (post.indexOf('<title>') === 0) {
 				var endIndx = post.indexOf('</title>');
 				post_title = post.slice(7, endIndx);
-				post = post.slice(endIndx + 8, post.length);
 			}
 		} else {
 			post = '<p style="text-align: center; margin: 3em;">The post <b>' + post_file + '</b> not found in drafts.</p>';

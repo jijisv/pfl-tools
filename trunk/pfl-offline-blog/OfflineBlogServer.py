@@ -35,9 +35,9 @@ class OfflineBlogRequestHandler(SimpleHTTPRequestHandler):
             if (start == 0):
                 end = post.find('</title>')
                 post_title = post[(start+7):end]
-                post = post[end + 8:]
         except:
-            post = "<p style=\"text-align: center;margin: 3em;\">The post <b>%s.html</b> not found in drafts.</p>" % (post_name)
+            post = "<p style=\"text-align: center;margin: 3em;\">The post <b>%s.html</b>" + \
+                "not found in drafts.</p>" % (post_name)
 
         return template.replace('$BLOG_ENTRY_BODY$', post).replace('$BLOG_ENTRY_TITLE$', post_title)
 
