@@ -19,12 +19,18 @@ public class OfflineBlogServer extends Verticle {
                 	if (req.path().equals("/v")) {
                 		String template = getVertx().fileSystem().readFileSync("index.htm").toString();
                 		String postName = req.params().get("p");
-                		String post = getVertx().fileSystem().readFileSync("drafts/" + postName + ".html").toString();
                 		String postTitle = postName;
-                		if (post.indexOf("<h1>") == 0) {
-                			int endIndx = post.indexOf("</h1>");
-                			postTitle = post.substring(4, endIndx);
-                			post = post.substring(endIndx + 5, post.length());
+                		String postFile = "drafts/" + postName + ".html";
+                		String post = "";
+                		if (getVertx().fileSystem().existsSync(postFile)) {
+	                		post = getVertx().fileSystem().readFileSync(postFile).toString();
+	                		if (post.indexOf("<title>") == 0) {
+	                			int endIndx = post.indexOf("</title>");
+	                			postTitle = post.substring(7, endIndx);
+	                			post = post.substring(endIndx + 8, post.length());
+	                		}
+                		} else {
+                			post = "<p style=\"text-align: center;margin: 3em;\">The post <b>" + postFile + "</b> not found in drafts.</p>";
                 		}
                 		req.response().end(template.replace("$BLOG_ENTRY_BODY$", post)
                 								   .replace("$BLOG_ENTRY_TITLE$", postTitle));
