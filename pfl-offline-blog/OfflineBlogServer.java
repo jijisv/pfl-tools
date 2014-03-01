@@ -27,7 +27,6 @@ public class OfflineBlogServer extends Verticle {
 	                		if (post.indexOf("<title>") == 0) {
 	                			int endIndx = post.indexOf("</title>");
 	                			postTitle = post.substring(7, endIndx);
-	                			post = post.substring(endIndx + 8, post.length());
 	                		}
                 		} else {
                 			post = "<p style=\"text-align: center;margin: 3em;\">The post <b>" + postFile + "</b> not found in drafts.</p>";
